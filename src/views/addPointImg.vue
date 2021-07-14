@@ -80,11 +80,24 @@ export default {
         let feature = new Feature({
           geometry: new Point(fromLonLat([coordinates[i].x, coordinates[i].y])),
         });
+        feature.setId('zhang' + i); //id只能外部设置
         feature.setStyle(this.getIcon(coordinates[i].type));
         this.featuresArr.push(feature);
       } // for 结束
       // 批量添加feature
       this.pointLayer.getSource().addFeatures(this.featuresArr);
+      setTimeout(()=>{
+        const dataFeatures = this.pointLayer.getSource().getFeatures(); //获取该图层所有的Feature
+        dataFeatures.forEach((item) => {
+          if(item.getId()=='zhang0'){ // 删除指定的featrue
+            this.pointLayer.getSource().removeFeature(item)
+          }
+        });
+      },3000)
+      this.map.on('click',function(type, listener){
+        console.log(type);
+      })
+      // console.log((this.map.getLayers().array_)[1].getSource()); 
     },
     getIcon() {
       // let src = require(`../assets/${type}.png`);
@@ -96,8 +109,8 @@ export default {
         //   scale: 0.9,
         // }),
         image: new RegularShape({
+          //填充样式
           fill: new Fill({
-            //填充样式。
             color: 'blue',
           }),
           stroke: new Stroke({
@@ -106,7 +119,7 @@ export default {
             width: 5,
           }),
           // radius: 30, // 	圆半径。
-          points: 3, //星形和正多边形的点数。在多边形的情况下，点数是边数。
+          points: 5, //星形和正多边形的点数。在多边形的情况下，点数是边数。
           radius1: 20, //星形的第一半径。如果设置了半径，则忽略。
           radius2: 10, //星形的第二半径。
         }),
@@ -139,6 +152,10 @@ export default {
     ];
     this.addPoints(coordinates); //根据坐标点批量打点
   },
+  /**
+   * 1. this.pointLayer.getSource()  //指定的图层去找Source
+   * 2. (this.map.getLayers().array_)[1].getSource()  //找到全局地图，然后找图层
+   */
 };
 </script>
 <style scoped lang="scss">
