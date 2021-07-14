@@ -2,16 +2,24 @@
   <div id="MapPoint" ref="map"></div>
 </template>
 <script>
-import "ol/ol.css";
-import TileLayer from "ol/layer/Tile";
-import VectorLayer from "ol/layer/Vector";
-import VectorSource from "ol/source/Vector";
-import XYZ from "ol/source/XYZ";
-import { Map, View, Feature } from "ol";
-import { Style, Icon, Text, Fill, Stroke, Circle } from "ol/style";
-import { Point } from "ol/geom";
-import { defaults as defaultControls } from "ol/control";
-import { fromLonLat } from "ol/proj";
+import 'ol/ol.css';
+import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import XYZ from 'ol/source/XYZ';
+import { Map, View, Feature } from 'ol';
+import {
+  Style,
+  Icon,
+  Text,
+  Fill,
+  Stroke,
+  Circle, //圆形
+  RegularShape, //多边形状
+} from 'ol/style';
+import { Point } from 'ol/geom';
+import { defaults as defaultControls } from 'ol/control';
+import { fromLonLat } from 'ol/proj';
 // import Fill from "ol/style/Fill";
 // import Stroke from "ol/style/Stroke";
 
@@ -30,14 +38,15 @@ export default {
      */
     initMap() {
       this.map = new Map({
-        target: "MapPoint",
+        target: 'MapPoint',
         controls: defaultControls({
           zoom: true,
         }).extend([]),
         layers: [
           new TileLayer({
             source: new XYZ({
-              url: "http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
+              url:
+                'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}',
             }),
           }),
         ],
@@ -59,11 +68,11 @@ export default {
         source: new VectorSource(),
       });
       // 添加图层
-      this.pointLayer.setStyle(
-        new Style({
-          fill: new Fill({ color: "#ddd" }),
-        })
-      );
+      // this.pointLayer.setStyle(
+      //   new Style({
+      //     fill: new Fill({ color: '#ddd' }),
+      //   })
+      // );
       this.map.addLayer(this.pointLayer);
       // 循环添加feature
       for (let i = 0; i < coordinates.length; i++) {
@@ -86,32 +95,36 @@ export default {
         //   // anchor: [1, 1], // 锚。默认值为图标中心
         //   scale: 0.9,
         // }),
-        image: new Circle({
+        image: new RegularShape({
           fill: new Fill({
-            color: "blue",
+            //填充样式。
+            color: 'blue',
           }),
-          stroke: new Stroke({  //描边
-            color: "#CD0000",
+          stroke: new Stroke({
+            //描边
+            color: '#CD0000',
             width: 5,
           }),
-          radius: 30,
+          // radius: 30, // 	圆半径。
+          points: 3, //星形和正多边形的点数。在多边形的情况下，点数是边数。
+          radius1: 20, //星形的第一半径。如果设置了半径，则忽略。
+          radius2: 10, //星形的第二半径。
         }),
         text: new Text({
           // 字体与大小
-          font: "13px Microsoft YaHei",
+          font: '13px Microsoft YaHei',
           //文字填充色
           fill: new Fill({
-            color: "#666",
+            color: '#666',
           }),
           //文字边界宽度与颜色
           stroke: new Stroke({
-            color: "#fff",
-            width: 3,
+            color: '#fff',
+            width: 5,
           }),
-          text: "25",
-          // 显示文本，数字需要转换为文本string类型！
-          /*text: "" + vectorSource.features.values_.limitvalue + "",*/
-          offsetY: -15,
+          text: '25',
+          // offsetY: -15,
+          // textAlign: 'center', //文字对齐
         }),
       });
       return styleIcon;
@@ -120,15 +133,15 @@ export default {
   mounted() {
     this.initMap(); //初始化地图方法
     let coordinates = [
-      { x: "86.36158200334317", y: "41.42448570787448", type: "che1" },
-      { x: "89.71757707811526", y: "31.02619817424643", type: "che2" },
-      { x: "116.31694544853109", y: "39.868508850821115", type: "che3" },
+      { x: '86.36158200334317', y: '41.42448570787448', type: 'che1' },
+      { x: '89.71757707811526', y: '31.02619817424643', type: 'che2' },
+      { x: '116.31694544853109', y: '39.868508850821115', type: 'che3' },
     ];
     this.addPoints(coordinates); //根据坐标点批量打点
   },
 };
 </script>
-<style scoped lang='scss'>
+<style scoped lang="scss">
 #MapPoint {
   width: 100%;
   height: 100vh;

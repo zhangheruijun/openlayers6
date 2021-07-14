@@ -17,20 +17,20 @@
 </template>
 
 <script>
-import { Map, View } from "ol"; //Coordinate
-import { Tile as TileLayer } from "ol/layer"; //Vector
-import { XYZ } from "ol/source"; // OSM
-import { fromLonLat, transform, toLonLat } from "ol/proj";
+import { Map, View } from 'ol'; //Coordinate
+import { Tile as TileLayer } from 'ol/layer'; //Vector
+import { XYZ } from 'ol/source'; // OSM
+import { fromLonLat, transform, toLonLat } from 'ol/proj';
 import {
   defaults as defaultInteractions,
   DragRotateAndZoom,
-} from "ol/interaction";
-import { defaults, ScaleLine } from "ol/control"; //FullScreen, MousePosition,
-import { toStringHDMS } from "ol/coordinate";
-import Overlay from "ol/Overlay";
+} from 'ol/interaction';
+import { defaults, ScaleLine } from 'ol/control'; //FullScreen, MousePosition,
+import { toStringHDMS } from 'ol/coordinate';
+import Overlay from 'ol/Overlay';
 
 export default {
-  name: "Home",
+  name: 'Home',
   data() {
     return {
       map: null,
@@ -56,17 +56,19 @@ export default {
       this.tileLayer = new TileLayer({
         //栅格图层，返回到浏览器的是一张张的瓦片图片，切片图层类型
         //一类是在服务器端渲染好，以图片形式返回浏览器的， imagelayer 和 tilelayer都是属于这种类型一类是在浏览器渲染的图层类型，vectorlayer 和 heatmaplayer就是这种类型。
-        className:'高德图',
+        className: '高德图',
         source: new XYZ({
-          url: "https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+          url:
+            'https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
         }),
         visible: true,
       });
       this.img1 = new TileLayer({
-        className: "天地图影像图层",
+        className: '天地图影像图层',
         visible: false,
         source: new XYZ({
-          url: "http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=5d27dc75ca0c3bdf34f657ffe1e9881d", //parent.TiandituKey()为天地图密钥
+          url:
+            'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=5d27dc75ca0c3bdf34f657ffe1e9881d', //parent.TiandituKey()为天地图密钥
           wrapX: false, //是否水平包裹世界
         }),
       });
@@ -97,10 +99,10 @@ export default {
     // 覆盖物点标记(非动态添加)
     pointFun() {
       var marker = new Overlay({
-        id: "pointOverlay",
+        id: 'pointOverlay',
         position: fromLonLat([104.043505, 30.58165]), //覆盖物坐标
-        positioning: "center-center",
-        element: document.getElementById("marker"),
+        positioning: 'center-center',
+        element: document.getElementById('marker'),
         stopEvent: false,
       });
       this.map.addOverlay(marker);
@@ -112,15 +114,15 @@ export default {
     //覆盖物弹窗(非动态添加)
     popupFun() {
       // 使用变量存储弹窗所需的 DOM 对象
-      var container = document.getElementById("popup");
-      var closer = document.getElementById("popup-closer");
-      var content = document.getElementById("popup-content");
+      var container = document.getElementById('popup');
+      var closer = document.getElementById('popup-closer');
+      var content = document.getElementById('popup-content');
       // 创建一个弹窗 Overlay 对象
       var overlay = new Overlay({
-        id: "popupOverlay",
+        id: 'popupOverlay',
         element: container, //绑定 Overlay 对象和 DOM 对象的
         autoPan: true, // 定义弹出窗口在边缘点击时候可能不完整 设置自动平移效果
-        positioning: "bottom-left", //定义叠加层相对于其position属性的实际定位方式
+        positioning: 'bottom-left', //定义叠加层相对于其position属性的实际定位方式
         offset: [-45, 0], //水平方向与垂直方向的偏移量
         autoPanAnimation: {
           duration: 250, //自动平移效果的动画时间 9毫秒）
@@ -130,16 +132,16 @@ export default {
       this.map.addOverlay(overlay);
       // let _that = this;
       //为弹窗添加一个响应关闭的函数
-      closer.onclick = function () {
+      closer.onclick = function() {
         overlay.setPosition(undefined);
         closer.blur();
         return false;
       };
       //添加单击响应函数来处理弹窗动作
-      this.map.on("singleclick", function (evt) {
+      this.map.on('singleclick', function(evt) {
         console.log(evt.coordinate); //EPSG:3857 伪墨卡托投影
         //singleclick 真正的单击，无需拖动和双击。请注意，此事件会延迟 250 毫秒，以确保它不是双击。
-        let coordinate = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
+        let coordinate = transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
         // 点击尺 （这里是尺(米)，并不是经纬度）;
         let hdms = toStringHDMS(toLonLat(evt.coordinate)); // 转换为经纬度显示(格式：31° 16′ 35″ N 108° 18′ 47″ E)
         content.innerHTML = `
@@ -168,9 +170,10 @@ export default {
       // });
       // //天地图影像注记图层;
       const img2 = new TileLayer({
-        className: "天地图影像注记图层",
+        className: '天地图影像注记图层',
         source: new XYZ({
-          url: "http://t0.tianditu.com/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=5d27dc75ca0c3bdf34f657ffe1e9881d", //parent.TiandituKey()为天地图密钥
+          url:
+            'http://t0.tianditu.com/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=5d27dc75ca0c3bdf34f657ffe1e9881d', //parent.TiandituKey()为天地图密钥
           wrapX: false,
         }),
       });
@@ -190,7 +193,7 @@ export default {
       this.tileLayer.setVisible(false);
       this.img1.setVisible(true);
       console.log(this.map.getTargetElement());
-      const getLayersArray = this.map.getLayers().array_;  //地图获取图层实设置
+      const getLayersArray = this.map.getLayers().array_; //地图获取图层实设置
       console.log(getLayersArray);
       // getLayersArray[0].setVisible(false);
       // getLayersArray[1].setVisible(true);
@@ -210,7 +213,7 @@ export default {
 
 // ------------------------------------覆盖物(Overlay)-----------------------------------
 7.this.map.addOverlay(overlay); //添加覆盖物
-8.this.map.removeOverlay(overlay); //添加覆盖物
+8.this.map.removeOverlay(overlay); //删除覆盖物
 */
 </script>
 <style lang="scss" scoped>
@@ -243,7 +246,7 @@ export default {
 .ol-popup:before {
   top: 100%;
   border: solid transparent;
-  content: " ";
+  content: ' ';
   height: 0;
   width: 0;
   position: absolute;
@@ -271,7 +274,7 @@ export default {
   width: 400px;
 }
 .ol-popup-closer:after {
-  content: "✖";
+  content: '✖';
 }
 .btnList {
   position: fixed;
