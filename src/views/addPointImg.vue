@@ -176,10 +176,18 @@ export default {
     },
   },
   /**
+   *
    * 1. this.pointLayer.getSource()  //指定的图层去找Source
-   * 2. (this.map.getLayers().array_)[1].getSource()  //找到全局地图，然后找图层
-   * 3. feature.setProperties({ sex: '男' }); //设置自定义属性，
-   * 3. feature.getProperties({ sex: '男' }); //获取自定义属性，
+   * 2. (this.map.getLayers().array_)[1].getSource() 找到全局地图，然后找图层
+   *
+   * ------------------------------添加、删除 Feature-------------------------------
+   * 1.this.pointLayer.getSource().addFeatures([]);  批量添加(数组)
+   * 2.this.pointLayer.getSource().removeFeature(item); 删除(单个删除)
+   * 3.this.pointLayer.getSource().clear(); 删除整个图层的Feature
+   *
+   * ------------------------------属性添加-----------------------------------------
+   * 1. feature.setProperties({ sex: '男' }); //设置自定义属性，
+   * 2. feature.getProperties({ sex: '男' }); //获取自定义属性，
    */
 };
 </script>
