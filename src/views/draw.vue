@@ -11,46 +11,49 @@
       </li>
     </ul>
     <div class="info" ref="infoEl"></div>
-    <div id="map"></div>
+    <div id="mapDraw">
+      <div id="cust-zoom"></div>
+    </div>
   </div>
 </template>
 
 <script>
-import { Map, View } from "ol";
-import Tile from "ol/layer/Tile";
-import XYZ from "ol/source/XYZ";
+import { Map, View } from 'ol';
+import Tile from 'ol/layer/Tile';
+import XYZ from 'ol/source/XYZ';
 // import TileGrid from 'ol/tilegrid/TileGrid';
-import VectorLayer from "ol/layer/Vector";
-import VectorSource from "ol/source/Vector";
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 // import Point from 'ol/geom/Point';
-import { Icon, Style, Stroke, Fill, Circle } from "ol/style";
-import Draw from "ol/interaction/Draw";
-import { createBox } from "ol/interaction/Draw";
-import { fromLonLat } from "ol/proj";
-import { Polygon, Point } from "ol/geom";
-import { DoubleClickZoom } from "ol/interaction";
-import { defaults, ScaleLinem, ZoomToExtent, ZoomSlider } from "ol/control"; //FullScreen, MousePosition,
+import { Icon, Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style';
+import { Draw, Modify, Snap } from 'ol/interaction';
+import { createBox } from 'ol/interaction/Draw';
+import { fromLonLat } from 'ol/proj';
+import { Polygon, Point, LineString, Circle as CustCircle } from 'ol/geom'; //防止与style中的Circle重名
+import { DoubleClickZoom } from 'ol/interaction';
+import { defaults as defaultControls } from 'ol/control';
 export default {
   data() {
     return {
       list: [
-        { name: "点", value: "Point" },
-        { name: "线", value: "LineString" },
-        { name: "矩形", value: "Box" },
-        { name: "多边形", value: "Polygon" },
-        { name: "圆", value: "Circle" },
-        { name: "自定义六角星", value: "custCircle" },
-        { name: "清除", value: "clear" },
+        { name: '点', value: 'Point' },
+        { name: '线', value: 'LineString' },
+        { name: '矩形', value: 'Box' },
+        { name: '多边形', value: 'Polygon' },
+        { name: '圆', value: 'Circle' },
+        { name: '自定义六角星', value: 'custCircle' },
+        { name: '清除', value: 'clear' },
       ],
     };
   },
   mounted() {
-    let center = [108.946994, 34.261361];
+    let center = fromLonLat([104.06, 30.6279315948486]);
     // arcgiS图层
     let arcgisLayer = new Tile({
       source: new XYZ({
-        url: "https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
+        url:
+          'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}',
       }),
     });
     // 矢量图层
@@ -66,7 +69,7 @@ export default {
         fill: new Fill({
           color: [242, 114, 60, 0.2],
         }),
-        image: new Circle({
+        image: new CircleStyle({
           // 点的颜色
           fill: new Fill({
             color: [242, 114, 60, 0.5],
@@ -81,55 +84,71 @@ export default {
       wrapX: false,
     });
     this.map = new Map({
-      target: "map",
+      target: 'mapDraw',
       layers: [arcgisLayer, this.vectorLayer],
       view: new View({
         center: center,
-        zoom: 12,
-        projection: "EPSG:4326",
+        zoom: 8,
+        // projection: 'EPSG:3857',
       }),
-      // controls: defaults({ zoom: true, rotate: false }).extend([
-      //   new ZoomSlider(),
-      //   new ZoomToExtent({
-      //     // 缩放至特定位置控件
-      //     // extent: [12667718, 2562800, 12718359, 2597725],
-      //   }),
-      // ]),
+      controls: defaultControls({
+        zoom: true,
+      }).extend([]),
     });
-    // const testData = [
-    //   [122.050605773926, 30.6279315948486],
-    //   [(122.050605773926, 30.6299896240234)],
-    //   [(122.053436279297, 30.6299896240234)],
-    //   [(122.053436279297, 30.6279315948486)],
-    //   [(122.050605773926, 30.6279315948486)],
-    // ];
-    // const plygons = new Polygon(testData);
-    // var featuresss = new Feature({
-    //       geometry: plygons,//plygon代表多边形，其他的还有point点，api上有写
-    //   });
-    // source.addFeature(featuresss);
+    // -------------------------------------根据坐标回显图形------------------------------------------
+    const pointFeature = new Feature(
+      new Point(fromLonLat([106.45, 30.6279315948486]))
+    ); //点
+    const lineFeature = new Feature(
+      new LineString([
+        fromLonLat([105.06, 30.6279315948486]),
+        fromLonLat([106.28, 32.9]),
+      ])
+    );
+
+    const testData = [
+      fromLonLat([104.06, 30.6279315948486]),
+      fromLonLat([104.28, 32.9]),
+      fromLonLat([104.9, 31.6299896240234]),
+    ];
+    const featurePolygon = new Feature(
+      { geometry: new Polygon([testData]) } //plygon代表多边形，其他的还有point点，api上有写
+    );
+    const metersPerUnit = this.map
+      .getView()
+      .getProjection()
+      .getMetersPerUnit();
+    const circleRadius = 100000 / metersPerUnit; //半径ol.geom.Circle设置半径的单位是随投影的单位
+    const circlesds = new CustCircle(
+      fromLonLat([104.06, 30.6279315948486]),
+      circleRadius
+    );
+    const featureCircle = new Feature({ geometry: circlesds });
+    this.vectorLayer
+      .getSource()
+      .addFeatures([pointFeature, lineFeature, featurePolygon, featureCircle]);
   },
   methods: {
     typeSelectChange(value) {
       const that = this;
       this.map.removeInteraction(this.draw); //从地图中删除给定的交互
-      if (value === "clear") {
+      if (value === 'clear') {
         this.vectorLayer.getSource().clear(); //删除整个图层的Feature
-        this.$refs.infoEl.innerHTML = "";
+        this.$refs.infoEl.innerHTML = '';
       } else {
-        if (value === "Box") {
+        if (value === 'Box') {
           this.draw = new Draw({
             source: this.vectorLayer.getSource(),
             geometryFunction: createBox(),
-            type: "LineString", //此实例绘制的几何图形的几何类型。
+            type: 'Circle', //此实例绘制的几何图形的几何类型。// type为'Circle'或者'LineString',
             stopClick: true, //绘制时禁用点击事件
             style: this.getDrawingStyle(), //绘制过程中的样式
           });
-        } else if (value === "custCircle") {
+        } else if (value === 'custCircle') {
           this.draw = new Draw({
             source: this.vectorLayer.getSource(),
             geometryFunction: this.geometryFunction,
-            type: "Circle",
+            type: 'Circle',
             stopClick: true,
             style: this.getDrawingStyle(),
           });
@@ -147,26 +166,27 @@ export default {
         //       .find((interaction) => {
         //         return interaction instanceof DoubleClickZoom;
         //       });
-        this.draw.on("drawend", (e) => {
+        this.draw.on('drawend', (e) => {
           // console.log((window.e = e), (window.d = this.draw));
-          if (this.draw.type_ === "Circle") {
-            if (value == "custCircle") {
+          if (this.draw.type_ === 'Circle') {
+            console.log(this.draw.type_);
+            if (value == 'custCircle' || value == 'Box') {
               let coordinates = e.feature.getGeometry().getCoordinates();
-              this.$refs.infoEl.innerHTML = "坐标：" + coordinates;
+              this.$refs.infoEl.innerHTML = '坐标：' + coordinates;
               console.log(coordinates);
             } else {
               let circleCenter = e.feature.getGeometry().getCenter(); //圆形
               let circleRadius = e.feature.getGeometry().getRadius();
               circleRadius = fromLonLat(
                 [circleRadius, circleRadius],
-                "EPSG:3857"
+                'EPSG:3857'
               )[0];
               this.$refs.infoEl.innerHTML =
-                "圆心：" + circleCenter + "<br/>半径：" + circleRadius;
+                '圆心：' + circleCenter + '<br/>半径：' + circleRadius;
             }
           } else {
             let coordinates = e.feature.getGeometry().getCoordinates();
-            this.$refs.infoEl.innerHTML = "坐标：" + coordinates;
+            this.$refs.infoEl.innerHTML = '坐标：' + coordinates;
             // this.map.removeInteraction(dblClickInteraction);
           }
           this.map.removeInteraction(this.draw);
@@ -185,7 +205,7 @@ export default {
         fill: new Fill({
           color: [239, 176, 19, 0.2],
         }),
-        image: new Circle({
+        image: new CircleStyle({
           // 点的颜色
           fill: new Fill({
             color: [239, 176, 19, 0.5],
@@ -260,7 +280,7 @@ export default {
     max-width: 200px;
     word-break: break-all;
   }
-  #map {
+  #mapDraw {
     width: 100%;
     height: 100vh;
   }

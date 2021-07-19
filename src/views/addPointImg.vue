@@ -86,18 +86,19 @@ export default {
       } // for 结束
       // 批量添加feature
       this.pointLayer.getSource().addFeatures(this.featuresArr);
-      setTimeout(()=>{
+      setTimeout(() => {
         const dataFeatures = this.pointLayer.getSource().getFeatures(); //获取该图层所有的Feature
         dataFeatures.forEach((item) => {
-          if(item.getId()=='zhang0'){ // 删除指定的featrue
-            this.pointLayer.getSource().removeFeature(item)
+          if (item.getId() == 'zhang0') {
+            // 删除指定的featrue
+            this.pointLayer.getSource().removeFeature(item);
           }
         });
-      },3000)
-      this.map.on('click',function(type, listener){
+      }, 3000);
+      this.map.on('click', function(type, listener) {
         console.log(type);
-      })
-      // console.log((this.map.getLayers().array_)[1].getSource()); 
+      });
+      // console.log((this.map.getLayers().array_)[1].getSource());
     },
     getIcon() {
       // let src = require(`../assets/${type}.png`);
