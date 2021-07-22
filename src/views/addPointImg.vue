@@ -79,7 +79,7 @@ export default {
         // 创建feature，一个feature就是一个点坐标信息
         let feature = new Feature({
           geometry: new Point(fromLonLat([coordinates[i].x, coordinates[i].y])),
-          target: '张何',
+          custAbc: '张何',
         });
         feature.setId('zhang' + i); //id只能外部设置
         feature.setStyle(this.getIcon(coordinates[i].type));
@@ -96,8 +96,24 @@ export default {
           }
         });
       }, 3000);
-      this.map.on('click', function(type, listener) {
-        console.log(type);
+      // 判断点击的是否是feature；并且该feature数据
+      this.map.on('click', (evt, listener) => {
+        if (this.map.hasFeatureAtPixel(evt.pixel)) {
+          // 判断点击的是否是feature
+          this.map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+            console.log(feature.values_.custAbc);
+          });
+        }
+      });
+      // 给feature添加手势
+      this.map.on('pointermove', (e) => {
+        var pixel = this.map.getEventPixel(e.originalEvent);
+        var hit = this.map.hasFeatureAtPixel(pixel);
+        if (hit) {
+          this.map.getTargetElement().style.cursor = 'pointer';
+        } else {
+          this.map.getTargetElement().style.cursor = '';
+        }
       });
       // console.log((this.map.getLayers().array_)[1].getSource());
     },

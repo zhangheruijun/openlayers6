@@ -22,6 +22,12 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ '../views/draw.vue'),
   },
+  {
+    path: '/pointAggregation',
+    name: 'pointAggregation',
+    component: () =>
+      import(/* webpackChunkName: "about" */ '../views/pointAggregation.vue'),
+  },
 ];
 
 const router = new VueRouter({

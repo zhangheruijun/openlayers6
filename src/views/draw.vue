@@ -146,7 +146,7 @@ export default {
         } else if (value === 'custCircle') {
           this.draw = new Draw({
             source: this.vectorLayer.getSource(),
-            geometryFunction: this.geometryFunction,
+            geometryFunction: this.geometryFunction, //自定义六角星
             type: 'Circle',
             stopClick: true,
             style: this.getDrawingStyle(),
