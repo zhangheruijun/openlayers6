@@ -11,13 +11,12 @@
       </li>
     </ul>
     <div class="info" ref="infoEl"></div>
-    <div id="mapDraw">
-      <div id="cust-zoom"></div>
-    </div>
+    <div id="mapDraw"></div>
   </div>
 </template>
 
 <script>
+import 'ol/ol.css';
 import { Map, View } from 'ol';
 import Tile from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
@@ -32,7 +31,7 @@ import { createBox } from 'ol/interaction/Draw';
 import { fromLonLat } from 'ol/proj';
 import { Polygon, Point, LineString, Circle as CustCircle } from 'ol/geom'; //防止与style中的Circle重名
 import { DoubleClickZoom } from 'ol/interaction';
-import { defaults as defaultControls } from 'ol/control';
+import { defaults as defaultControls, ZoomSlider } from 'ol/control';
 export default {
   data() {
     return {
@@ -93,7 +92,7 @@ export default {
       }),
       controls: defaultControls({
         zoom: true,
-      }).extend([]),
+      }).extend([new ZoomSlider()]),
     });
     // -------------------------------------根据坐标回显图形------------------------------------------
     const pointFeature = new Feature(
@@ -284,12 +283,38 @@ export default {
     width: 100%;
     height: 100vh;
   }
-  // .ol-control {
-  //   display: none !important;
-  // }
   ul,
   li {
     list-style: none;
   }
+}
+</style>
+<style>
+/* openlayers外部改变样式，不能用预编译 */
+#mapDraw .ol-zoomslider {
+  top: 8px;
+  left: auto;
+  right: 8px;
+  background-color: rgba(255, 69, 0, 0.2);
+  width: 200px;
+  height: 15px;
+  padding: 0;
+  box-shadow: 0 0 5px rgb(255, 69, 0);
+  border-radius: 7.5px;
+}
+#mapDraw .ol-zoomslider:hover {
+  background-color: rgba(255, 69, 0, 0.3);
+}
+
+#mapDraw .ol-zoomslider-thumb {
+  height: 15px;
+  width: 15px;
+  margin: 0;
+  filter: none;
+  background-color: rgba(255, 69, 0, 0.6);
+  border-radius: 7.5px;
+}
+#mapDraw a.ol-zoomslider-handle:hover {
+  background-color: rgba(255, 69, 0, 0.7);
 }
 </style>

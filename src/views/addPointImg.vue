@@ -79,6 +79,7 @@ export default {
         // 创建feature，一个feature就是一个点坐标信息
         let feature = new Feature({
           geometry: new Point(fromLonLat([coordinates[i].x, coordinates[i].y])),
+          target: '张何',
         });
         feature.setId('zhang' + i); //id只能外部设置
         feature.setStyle(this.getIcon(coordinates[i].type));

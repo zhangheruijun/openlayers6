@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import 'ol/ol.css';
 import { Map, View } from 'ol'; //Coordinate
 import { Tile as TileLayer } from 'ol/layer'; //Vector
 import { XYZ } from 'ol/source'; // OSM
@@ -25,7 +26,14 @@ import {
   defaults as defaultInteractions,
   DragRotateAndZoom,
 } from 'ol/interaction';
-import { defaults, ScaleLine } from 'ol/control'; //FullScreen, MousePosition,
+import {
+  defaults,
+  ScaleLine,
+  FullScreen,
+  MousePosition,
+  ZoomSlider,
+  OverviewMap,
+} from 'ol/control';
 import { toStringHDMS } from 'ol/coordinate';
 import Overlay from 'ol/Overlay';
 
@@ -83,11 +91,13 @@ export default {
           constrainResolution: true, // 因为存在非整数的缩放级别，所以设置该参数为true来让每次缩放结束后自动缩放到距离最近的一个整数级别，这个必须要设置，当缩放在非整数级别时地图会糊
         }),
         interactions: defaultInteractions().extend([new DragRotateAndZoom()]), //地图交互(旋转)
-        controls: defaults({ zoom: false }).extend([
+        controls: defaults({ zoom: true }).extend([
           // //地图控件
-          // new FullScreen(), // 全屏
-          // new MousePosition(), // 显示鼠标当前位置的经纬度
+          new FullScreen(), // 全屏
+          new MousePosition(), // 显示鼠标当前位置的经纬度
           new ScaleLine(), // 显示比例尺
+          new ZoomSlider(), //滑块
+          new OverviewMap(), //使用地图作为另一个定义地图的概览图创建一个新控件。
         ]),
         target: this.$refs.olMap, // DOM容器
       });
