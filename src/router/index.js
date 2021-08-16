@@ -28,6 +28,12 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ '../views/pointAggregation.vue'),
   },
+  {
+    path: '/drawSphere',
+    name: 'drawSphere',
+    component: () =>
+      import(/* webpackChunkName: "about" */ '../views/drawSphere.vue'),
+  },
 ];
 
 const router = new VueRouter({

@@ -17,7 +17,7 @@
 
 <script>
 import 'ol/ol.css';
-import { Map, View } from 'ol';
+import { Map, View, geom } from 'ol';
 import Tile from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 // import TileGrid from 'ol/tilegrid/TileGrid';
@@ -28,10 +28,12 @@ import Feature from 'ol/Feature';
 import { Icon, Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style';
 import { Draw, Modify, Snap } from 'ol/interaction';
 import { createBox } from 'ol/interaction/Draw';
-import { fromLonLat } from 'ol/proj';
+import { fromLonLat, transform } from 'ol/proj';
 import { Polygon, Point, LineString, Circle as CustCircle } from 'ol/geom'; //防止与style中的Circle重名
 import { DoubleClickZoom } from 'ol/interaction';
 import { defaults as defaultControls, ZoomSlider } from 'ol/control';
+import { getArea, getLength } from 'ol/sphere';
+import { unByKey } from 'ol/Observable';
 export default {
   data() {
     return {
@@ -56,10 +58,11 @@ export default {
       }),
     });
     // 矢量图层
-    const source = new VectorSource();
+    const source = new VectorSource({ wrapX: false });
     this.vectorLayer = new VectorLayer({
       source,
       style: new Style({
+        //绘制后的样式
         stroke: new Stroke({
           width: 2,
           color: [242, 114, 60, 1],
@@ -103,7 +106,7 @@ export default {
         fromLonLat([105.06, 30.6279315948486]),
         fromLonLat([106.28, 32.9]),
       ])
-    );
+    ); //线
 
     const testData = [
       fromLonLat([104.06, 30.6279315948486]),
@@ -112,7 +115,7 @@ export default {
     ];
     const featurePolygon = new Feature(
       { geometry: new Polygon([testData]) } //plygon代表多边形，其他的还有point点，api上有写
-    );
+    ); //多边形
     const metersPerUnit = this.map
       .getView()
       .getProjection()
@@ -122,7 +125,7 @@ export default {
       fromLonLat([104.06, 30.6279315948486]),
       circleRadius
     );
-    const featureCircle = new Feature({ geometry: circlesds });
+    const featureCircle = new Feature({ geometry: circlesds }); //圆
     this.vectorLayer
       .getSource()
       .addFeatures([pointFeature, lineFeature, featurePolygon, featureCircle]);
@@ -157,24 +160,24 @@ export default {
             type: value,
             stopClick: true, //绘制时禁用点击事件
             style: this.getDrawingStyle(),
+            // freehand: true, //以手绘模式操作线、多边形和圆。这使得交互始终以徒手模式运行并优先于任何freehandCondition选项
           });
         }
-        //  const dblClickInteraction = this.map
-        //       .getInteractions()
-        //       .getArray()
-        //       .find((interaction) => {
-        //         return interaction instanceof DoubleClickZoom;
-        //       });
+        // this.dblClickInteraction = this.map
+        //   .getInteractions()
+        //   .getArray()
+        //   .find((interaction) => {
+        //     return interaction instanceof DoubleClickZoom;
+        //   });
         this.draw.on('drawend', (e) => {
           // console.log((window.e = e), (window.d = this.draw));
           if (this.draw.type_ === 'Circle') {
-            console.log(this.draw.type_);
             if (value == 'custCircle' || value == 'Box') {
               let coordinates = e.feature.getGeometry().getCoordinates();
               this.$refs.infoEl.innerHTML = '坐标：' + coordinates;
               console.log(coordinates);
             } else {
-              let circleCenter = e.feature.getGeometry().getCenter(); //圆形
+              let circleCenter = e.feature.getGeometry().getCenter(); //圆心
               let circleRadius = e.feature.getGeometry().getRadius();
               circleRadius = fromLonLat(
                 [circleRadius, circleRadius],
@@ -183,17 +186,23 @@ export default {
               this.$refs.infoEl.innerHTML =
                 '圆心：' + circleCenter + '<br/>半径：' + circleRadius;
             }
+            // 测面积
+            // const line = e.feature.geometryChangeKey_['target'];
+            // console.log(getArea(line));
           } else {
             let coordinates = e.feature.getGeometry().getCoordinates();
             this.$refs.infoEl.innerHTML = '坐标：' + coordinates;
-            // this.map.removeInteraction(dblClickInteraction);
+            // this.map.removeInteraction(this.dblClickInteraction);
+            // ---------测距离----------
+            // const line = e.feature.geometryChangeKey_['target'];
+            // console.log(getLength(line));
           }
-          this.map.removeInteraction(this.draw);
+          // this.map.removeInteraction(this.draw);
         });
-        console.log(this.draw);
         this.map.addInteraction(this.draw);
       }
     },
+    //绘制中的样式
     getDrawingStyle() {
       return new Style({
         stroke: new Stroke({

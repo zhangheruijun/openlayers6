@@ -57,46 +57,46 @@ export default {
     /**
      * 设置区域
      */
-    addArea(geo = []) {
-      if (geo.length == 0) return false;
-      let areaFeature = null;
-      // 设置图层
-      this.areaLayer = new VectorLayer({
-        source: new VectorSource({
-          features: [],
-        }),
-      });
-      // 添加图层
-      this.map.addLayer(this.areaLayer);
-      geo.forEach((g) => {
-        let lineData = g.features[0];
-        if (lineData.geometry.type == 'MultiPolygon') {
-          areaFeature = new Feature({
-            geometry: new MultiPolygon(lineData.geometry.coordinates).transform(
-              'EPSG:4326',
-              'EPSG:3857'
-            ),
-          });
-        } else if (lineData.geometry.type == 'Polygon') {
-          areaFeature = new Feature({
-            geometry: new Polygon(lineData.geometry.coordinates).transform(
-              'EPSG:4326',
-              'EPSG:3857'
-            ),
-          });
-        }
-      });
-      areaFeature.setStyle(
-        new Style({
-          fill: new Fill({ color: '#4e98f444' }),
-          stroke: new Stroke({
-            width: 3,
-            color: [71, 137, 227, 1],
-          }),
-        })
-      );
-      this.areaLayer.getSource().addFeatures([areaFeature]);
-    },
+    // addArea(geo = []) {
+    //   if (geo.length == 0) return false;
+    //   let areaFeature = null;
+    //   // 设置图层
+    //   this.areaLayer = new VectorLayer({
+    //     source: new VectorSource({
+    //       features: [],
+    //     }),
+    //   });
+    //   // 添加图层
+    //   this.map.addLayer(this.areaLayer);
+    //   geo.forEach((g) => {
+    //     let lineData = g.features[0];
+    //     if (lineData.geometry.type == 'MultiPolygon') {
+    //       areaFeature = new Feature({
+    //         geometry: new MultiPolygon(lineData.geometry.coordinates).transform(
+    //           'EPSG:4326',
+    //           'EPSG:3857'
+    //         ),
+    //       });
+    //     } else if (lineData.geometry.type == 'Polygon') {
+    //       areaFeature = new Feature({
+    //         geometry: new Polygon(lineData.geometry.coordinates).transform(
+    //           'EPSG:4326',
+    //           'EPSG:3857'
+    //         ),
+    //       });
+    //     }
+    //   });
+    //   areaFeature.setStyle(
+    //     new Style({
+    //       fill: new Fill({ color: '#4e98f444' }),
+    //       stroke: new Stroke({
+    //         width: 3,
+    //         color: [71, 137, 227, 1],
+    //       }),
+    //     })
+    //   );
+    //   this.areaLayer.getSource().addFeatures([areaFeature]);
+    // },
     addCluster(clusterData, points, clearup) {
       let source = new VectorSource();
       let clusterSource = new Cluster({
