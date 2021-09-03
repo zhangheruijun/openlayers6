@@ -65,6 +65,7 @@ export default {
     addPoints(coordinates) {
       // 设置图层
       this.pointLayer = new VectorLayer({
+        className: 'zhang-feat',
         source: new VectorSource(),
       });
       // 添加图层
@@ -82,30 +83,46 @@ export default {
           custAbc: '张何',
         });
         feature.setId('zhang' + i); //id只能外部设置
+        feature.set('abc', '添加属性'); //自定义添加属性
+        feature.target = { name: '放在外面的树形' }; // 添加属性target
         feature.setStyle(this.getIcon(coordinates[i].type));
         this.featuresArr.push(feature);
       } // for 结束
       // 批量添加feature
       this.pointLayer.getSource().addFeatures(this.featuresArr);
+
+      // ----------------------------------------------methodes---------------------------------------------
       setTimeout(() => {
         const dataFeatures = this.pointLayer.getSource().getFeatures(); //获取该图层所有的Feature
+        console.log(
+          this.pointLayer
+            .getSource()
+            .getFeatureById('zhang0') //通过其标识符（由 feature.getId() 返回的值）获取功能。请注意，索引将字符串和数字标识符视为相同。所以 source.getFeatureById(2)会返回一个带有 id'2'或2.
+            .getGeometry()
+            .getFlatCoordinates() //获取Feature经纬度
+        );
         dataFeatures.forEach((item) => {
+          console.log(item.getGeometry());
           if (item.getId() == 'zhang0') {
             // 删除指定的featrue
-            this.pointLayer.getSource().removeFeature(item);
+            // this.pointLayer.getSource().removeFeature(item);
+            item.setGeometry(new Point(fromLonLat([90, 50])));
           }
         });
       }, 3000);
-      // 判断点击的是否是feature；并且该feature数据
+      // ----------------------------------判断点击的是否是feature；并且该feature数据-------------------------
       this.map.on('click', (evt, listener) => {
+        console.log(this.map.getLayers());
         if (this.map.hasFeatureAtPixel(evt.pixel)) {
           // 判断点击的是否是feature
           this.map.forEachFeatureAtPixel(evt.pixel, (feature) => {
-            console.log(feature.values_.custAbc);
+            console.log(feature.get('custAbc'));
           });
         }
+        console.log(this.map.getLayers().getArray()); //获取图层
       });
-      // 给feature添加手势
+
+      // -------------------------------------------给feature添加手势-----------------------------
       this.map.on('pointermove', (e) => {
         var pixel = this.map.getEventPixel(e.originalEvent);
         var hit = this.map.hasFeatureAtPixel(pixel);
@@ -117,6 +134,8 @@ export default {
       });
       // console.log((this.map.getLayers().array_)[1].getSource());
     },
+
+    // --------------------------------------------------样式-------------------------------------------------
     getIcon() {
       // let src = require(`../assets/${type}.png`);
       var styleIcon = new Style({

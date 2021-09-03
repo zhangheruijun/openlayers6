@@ -34,6 +34,12 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ '../views/drawSphere.vue'),
   },
+  {
+    path: '/task',
+    name: 'task',
+    component: () =>
+      import(/* webpackChunkName: "about" */ '../views/task.vue'),
+  },
 ];
 
 const router = new VueRouter({

@@ -105,6 +105,7 @@ export default {
       new LineString([
         fromLonLat([105.06, 30.6279315948486]),
         fromLonLat([106.28, 32.9]),
+        fromLonLat([107.28, 33.9]),
       ])
     ); //线
 

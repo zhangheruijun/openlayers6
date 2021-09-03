@@ -181,7 +181,8 @@ export default {
         });
       });
 
-      this.draw.on('drawend', () => {
+      this.draw.on('drawend', (evt) => {
+        console.log(evt.feature.getGeometry().getCoordinates());
         this.measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
         this.measureTooltip.setOffset([0, -7]);
         this.sketch = null;

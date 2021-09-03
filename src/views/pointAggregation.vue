@@ -98,13 +98,13 @@ export default {
     //   this.areaLayer.getSource().addFeatures([areaFeature]);
     // },
     addCluster(clusterData, points, clearup) {
-      let source = new VectorSource();
+      let sourceIntimal = new VectorSource(); //双图层(内部图层,添加的点图层)
       let clusterSource = new Cluster({
-        distance: parseInt(20, 10),
-        source: source,
+        distance: 20, //要素将聚集在一起的距离（以像素为单位）
+        source: sourceIntimal,
       });
       let layer = new VectorLayer({
-        source: clusterSource,
+        source: clusterSource, // 聚合图层
         style: this.clusterStyle.call(this),
       });
       this.map.addLayer(layer);
@@ -120,17 +120,20 @@ export default {
             });
             f.set('name', e.name);
             f.set('value', e.value);
-            source.addFeature(f);
+            sourceIntimal.addFeature(f);
           }
         });
       }
     },
     clusterStyle() {
       return (feature, solution) => {
+        // 此处feature是聚合图层上的点
         var total = 0;
         feature.get('features').forEach((value, index) => {
+          console.log(value.get('value'), index);
           total += value.get('value');
         });
+        // console.log(feature.get('features').length); //合并的综合点数
         var style = new Style({
           image: new CircleStyle({
             radius: 15,
