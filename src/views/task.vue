@@ -20,7 +20,6 @@ import 'ol/ol.css';
 import Feature from 'ol/Feature';
 import Map from 'ol/Map';
 import Point from 'ol/geom/Point';
-import Polyline from 'ol/format/Polyline';
 import VectorSource from 'ol/source/Vector';
 import View from 'ol/View';
 import XYZ from 'ol/source/XYZ';
