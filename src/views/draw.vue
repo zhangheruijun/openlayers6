@@ -97,6 +97,7 @@ export default {
         zoom: true,
       }).extend([new ZoomSlider()]),
     });
+
     // -------------------------------------根据坐标回显图形------------------------------------------
     const pointFeature = new Feature(
       new Point(fromLonLat([106.45, 30.6279315948486]))
@@ -254,6 +255,15 @@ export default {
       }
       return geometry;
     },
+
+    // -----------------------------------------------------笔记-------------------------------------
+    // import { boundingExtent, getCenter } from 'ol/extent'; //引用
+    //--------------根据图层自适应图层缩放级别以及获取图层中心点并且定位到中心点显示----------------
+    // const lonlatCenter = [[lon1,lat1],[lon2,lat2],...]  //围成图形的经纬度
+    // const extent = ol.extent.boundingExtent(lonlatCenter); // 获取一个坐标数组的边界，格式为[minx,miny,maxx,maxy]
+    // const center = ol.extent.getCenter(extent); // 获取边界区域的中心位置
+    // map.getView().setCenter(center); // 设置当前地图的显示中心位置
+    // map.getView().fit(extent); // 设置自适应缩放大小
   },
 };
 </script>

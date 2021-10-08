@@ -78,7 +78,7 @@ export default {
       const routeFeature = new Feature({
         type: 'route',
         geometry: route,
-      }); //线
+      }); //线(路径)
 
       //开始图标
       const startMarker = new Feature({
@@ -158,7 +158,7 @@ export default {
           ];
         }
         position.setCoordinates(currentCoordinate); //设置轨迹移动(实时)坐标
-        const vectorContext = getVectorContext(event); // 获取用于绘制到事件画布的矢量上下文。
+        const vectorContext = getVectorContext(event); // 获取用于绘制到事件画布的矢量上下文
         vectorContext.setStyle(styles.geoMarker);
         vectorContext.drawGeometry(position); //将几何图形渲染到画布中。renderer.setStyle()首先调用 设置渲染样式
         if (distance > 1) {
@@ -167,6 +167,7 @@ export default {
           stopAnimation();
         }
         // 告诉OpenLayers继续postrender动画
+        // console.log(distance * 100 + '%');
         this.map.render();
       };
 
@@ -175,6 +176,7 @@ export default {
         animating = true;
         lastTime = Date.now();
         startButton.textContent = 'Stop Animation';
+        console.log(vectorLayer);
         vectorLayer.on('postrender', moveFeature);
         // 通过改变事件隐藏geoMarker和触发地图渲染
         geoMarker.setGeometry(null);
@@ -188,8 +190,7 @@ export default {
         geoMarker.setGeometry(position);
         vectorLayer.un('postrender', moveFeature); // un：不收听某种类型的事件
       };
-
-      startButton.addEventListener('click', function() {
+      startButton.addEventListener('click', () => {
         if (animating) {
           stopAnimation();
         } else {
