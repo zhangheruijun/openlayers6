@@ -4,6 +4,7 @@
     <div>
       <div @click="onTypeChange('length')">测距 (LineString)</div>
       <div @click="onTypeChange('area')">测面积 (Polygon)</div>
+      <div @click="onClear">清空</div>
     </div>
     <!-- <form class="form-inline">
       <label for="type">测量类型</label>
@@ -23,10 +24,11 @@ import Overlay from 'ol/Overlay';
 import View from 'ol/View';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { LineString, Polygon } from 'ol/geom';
-import { OSM, Vector as VectorSource } from 'ol/source';
+import { OSM, XYZ, Vector as VectorSource } from 'ol/source';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import { getArea, getLength } from 'ol/sphere';
 import { unByKey } from 'ol/Observable';
+import { fromLonLat, transform, toLonLat } from 'ol/proj';
 export default {
   data() {
     return {
@@ -68,10 +70,18 @@ export default {
       }),
     });
     this.map = new Map({
-      layers: [raster, vector],
+      layers: [
+        new TileLayer({
+          source: new XYZ({
+            url:
+              'https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+          }),
+        }),
+        vector,
+      ],
       target: 'map',
       view: new View({
-        center: [-11000000, 4600000],
+        center: fromLonLat([120.771441, 30.756433]), //地图中心点
         zoom: 15,
       }),
     });
@@ -227,6 +237,17 @@ export default {
         insertFirst: false,
       });
       this.map.addOverlay(this.measureTooltip);
+    },
+    // 清空
+    onClear() {
+      const dom = document.getElementsByClassName(
+        'ol-tooltip ol-tooltip-static'
+      );
+      for (let k of Array.from(dom)) {
+        k.remove();
+      }
+      this.source.clear();
+      console.log(dom);
     },
   },
 };
