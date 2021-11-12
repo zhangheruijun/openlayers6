@@ -33,7 +33,7 @@ export default {
   data() {
     return {
       sketch: false,
-      helpTooltipElement: null, //指示框的html
+      helpTooltipElement: null, //指示框的html(怎样操作的提示语)
       helpTooltip: undefined, //指示框的overlay
       measureTooltipElement: undefined, //距离、面积框的html
       measureTooltip: undefined, // 距离、面积框的overlay
